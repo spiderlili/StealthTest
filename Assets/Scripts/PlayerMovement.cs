@@ -10,14 +10,16 @@ public class PlayerMovement : MonoBehaviour
 
     Quaternion _player_Rotation = Quaternion.identity;
 
+    AudioSource _player_footsteps_SE;
+
     //a turnSpeed of 3 radians => 1 second for the character to completely turn around as a circle has 2 x 3.14 = 6 radians
     public float turnSpeed = 20.0f; //how fast to rotate - the angle in radians for the character to turn per second.
-
 
     void Start()
     {
         _player_Animator = GetComponent<Animator>();
         _player_Rigidbody = GetComponent<Rigidbody>();
+        _player_footsteps_SE = GetComponent<AudioSource>();
     }
 
     void FixedUpdate()
@@ -32,6 +34,16 @@ public class PlayerMovement : MonoBehaviour
         bool _isWalking = _hasHorizontalInput || _hasVerticalInput;
         _player_Animator.SetBool("IsWalking", _isWalking);
 
+        if (_isWalking)
+        {
+            if (!_player_footsteps_SE.isPlaying){
+                _player_footsteps_SE.Play();
+            }
+            else
+            {
+                _player_footsteps_SE.Stop();
+            }
+        }
         //face direction of movement when turning
         //multiply the angle for the charcter to turn by Time.deltaTime => the amount to turn this frame. 
         Vector3 desiredForward = Vector3.RotateTowards(transform.forward, _player_Movement, turnSpeed * Time.deltaTime, 0.0f);
